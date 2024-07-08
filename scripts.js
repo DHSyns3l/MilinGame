@@ -10,6 +10,7 @@ let players = [];
 let votes = [];
 let nightPhase = true;
 let chatHistory = []; // เก็บประวัติการแชท
+let lobbyPlayers = [];
 
 function startGame() {
     playBackgroundSound();
@@ -23,10 +24,45 @@ function startGame() {
 
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('lobby-screen').style.display = 'block';
+    addPlayerToLobby();
+}
+
+function addPlayerToLobby() {
+    const playerName = prompt("กรุณาใส่ชื่อของคุณ:");
+    if (playerName) {
+        lobbyPlayers.push({
+            name: playerName,
+            online: true
+        });
+        updateLobbyPlayers();
+        checkLobbyStatus();
+    }
+}
+
+function updateLobbyPlayers() {
+    const playerListDiv = document.getElementById('player-list');
+    playerListDiv.innerHTML = '';
+    lobbyPlayers.forEach(player => {
+        const playerDiv = document.createElement('div');
+        playerDiv.className = 'lobby-player-card';
+        playerDiv.innerHTML = `
+            <h3>${player.name}</h3>
+            <p class="${player.online ? 'online-status' : 'offline-status'}">${player.online ? 'ออนไลน์' : 'ออฟไลน์'}</p>
+        `;
+        playerListDiv.appendChild(playerDiv);
+    });
+}
+
+function checkLobbyStatus() {
+    if (lobbyPlayers.length >= 8 && lobbyPlayers.length <= 16) {
+        document.getElementById('start-lobby-game').style.display = 'block';
+    } else {
+        document.getElementById('start-lobby-game').style.display = 'none';
+    }
 }
 
 function startLobbyGame() {
-    const playerCount = players.length;
+    const playerCount = lobbyPlayers.length;
     if (playerCount < 8 || playerCount > 16) {
         alert("จำนวนผู้เล่นต้องอยู่ระหว่าง 8-16 คน");
         return;
@@ -48,6 +84,7 @@ function assignRoles(playerCount) {
     for (let i = 0; i < playerCount; i++) {
         players.push({
             id: i + 1,
+            name: lobbyPlayers[i].name,
             role: shuffledRoles[i % roles.length],
             alive: true,
             protected: false, // สำหรับ Guardian
@@ -66,7 +103,7 @@ function displayPlayers(players) {
         const playerDiv = document.createElement('div');
         playerDiv.className = 'player-card';
         playerDiv.innerHTML = `
-            <h3>ผู้เล่น ${player.id}</h3>
+            <h3>ผู้เล่น ${player.name}</h3>
             <p>สถานะ: ${player.alive ? 'ยังมีชีวิตอยู่' : 'ตายแล้ว'}</p>
             <p class="${player.online ? 'online-status' : 'offline-status'}">${player.online ? 'ออนไลน์' : 'ออฟไลน์'}</p>
             ${player.alive && !nightPhase ? `<button onclick="vote(${player.id})">โหวต</button>` : ''}
