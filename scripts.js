@@ -2,6 +2,7 @@ document.getElementById('start-game').addEventListener('click', startGame);
 document.getElementById('end-game').addEventListener('click', endGame);
 document.getElementById('restart-game').addEventListener('click', restartGame);
 document.getElementById('send-chat').addEventListener('click', sendChat);
+window.addEventListener('beforeunload', saveGameState); // บันทึกสถานะเกมเมื่อปิดหน้าเว็บ
 
 const roles = ['มนุษย์หมาป่า', 'ผู้หยั่งรู้', 'ชาวบ้าน', 'หมอ', 'นักล่า', 'แม่มด', 'คิวปิด', 'ขโมย', 'อัศวิน', 'ผู้พิทักษ์', 'ตัวตลก'];
 let players = [];
@@ -10,6 +11,14 @@ let nightPhase = true;
 let chatHistory = []; // เก็บประวัติการแชท
 
 function startGame() {
+    const savedGameState = loadGameState();
+    if (savedGameState) {
+        if (confirm('พบสถานะเกมที่บันทึกไว้ คุณต้องการโหลดสถานะเกมก่อนหน้าไหม?')) {
+            restoreGameState(savedGameState);
+            return;
+        }
+    }
+
     const playerCount = prompt("กรุณาใส่จำนวนผู้เล่น (8-16):");
     if (playerCount < 8 || playerCount > 16) {
         alert("จำนวนผู้เล่นต้องอยู่ระหว่าง 8-16 คน");
@@ -246,4 +255,31 @@ function loadChatHistory() {
         chatBox.appendChild(messageDiv);
     });
     chatBox.scrollTop = chatBox.scrollHeight; // เลื่อนแชทลงล่างสุด
+}
+
+function saveGameState() {
+    const gameState = {
+        players,
+        votes,
+        nightPhase,
+        chatHistory
+    };
+    localStorage.setItem('wereMilinWolfGameState', JSON.stringify(gameState));
+}
+
+function loadGameState() {
+    const savedGameState = localStorage.getItem('wereMilinWolfGameState');
+    return savedGameState ? JSON.parse(savedGameState) : null;
+}
+
+function restoreGameState(savedGameState) {
+    players = savedGameState.players;
+    votes = savedGameState.votes;
+    nightPhase = savedGameState.nightPhase;
+    chatHistory = savedGameState.chatHistory;
+    displayPlayers(players);
+    showPhaseMessage();
+    loadChatHistory();
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
 }
