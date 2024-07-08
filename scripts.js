@@ -30,7 +30,8 @@ function assignRoles(playerCount) {
         players.push({
             id: i + 1,
             role: shuffledRoles[i % roles.length],
-            alive: true
+            alive: true,
+            protected: false // สำหรับ Guardian
         });
     }
 
@@ -82,7 +83,62 @@ function useAbility(playerId) {
                 alert("ไม่พบผู้เล่นดังกล่าว");
             }
             break;
-        // เพิ่มความสามารถพิเศษของตัวละครอื่น ๆ ตามต้องการ
+        case 'Hunter':
+            if (!player.alive) {
+                const hunterKillId = prompt("คุณถูกฆ่า เลือกผู้เล่นที่คุณต้องการฆ่า (ใส่หมายเลขผู้เล่น):");
+                const hunterKillPlayer = players.find(p => p.id == hunterKillId);
+                if (hunterKillPlayer) {
+                    hunterKillPlayer.alive = false;
+                    alert(`ผู้เล่น ${hunterKillId} ถูกฆ่าโดย Hunter`);
+                } else {
+                    alert("ไม่พบผู้เล่นดังกล่าว");
+                }
+            }
+            break;
+        case 'Witch':
+            if (confirm("คุณต้องการใช้ยาพิษหรือยารักษา? กด 'ตกลง' เพื่อใช้ยาพิษ หรือ 'ยกเลิก' เพื่อใช้ยารักษา")) {
+                const witchKillId = prompt("เลือกผู้เล่นที่คุณต้องการฆ่า (ใส่หมายเลขผู้เล่น):");
+                const witchKillPlayer = players.find(p => p.id == witchKillId);
+                if (witchKillPlayer) {
+                    witchKillPlayer.alive = false;
+                    alert(`ผู้เล่น ${witchKillId} ถูกฆ่าโดย Witch`);
+                } else {
+                    alert("ไม่พบผู้เล่นดังกล่าว");
+                }
+            } else {
+                const witchHealId = prompt("เลือกผู้เล่นที่คุณต้องการรักษา (ใส่หมายเลขผู้เล่น):");
+                const witchHealPlayer = players.find(p => p.id == witchHealId);
+                if (witchHealPlayer) {
+                    witchHealPlayer.alive = true;
+                    alert(`ผู้เล่น ${witchHealId} ได้รับการรักษา`);
+                } else {
+                    alert("ไม่พบผู้เล่นดังกล่าว");
+                }
+            }
+            break;
+        case 'Cupid':
+            const lover1Id = prompt("เลือกผู้เล่นที่คุณต้องการให้เป็นคนรักคนแรก (ใส่หมายเลขผู้เล่น):");
+            const lover2Id = prompt("เลือกผู้เล่นที่คุณต้องการให้เป็นคนรักคนที่สอง (ใส่หมายเลขผู้เล่น):");
+            const lover1 = players.find(p => p.id == lover1Id);
+            const lover2 = players.find(p => p.id == lover2Id);
+            if (lover1 && lover2) {
+                lover1.lover = lover2Id;
+                lover2.lover = lover1Id;
+                alert(`ผู้เล่น ${lover1Id} และผู้เล่น ${lover2Id} เป็นคนรักกัน`);
+            } else {
+                alert("ไม่พบผู้เล่นดังกล่าว");
+            }
+            break;
+        case 'Guardian':
+            const protectId = prompt("เลือกผู้เล่นที่คุณต้องการปกป้อง (ใส่หมายเลขผู้เล่น):");
+            const protectPlayer = players.find(p => p.id == protectId);
+            if (protectPlayer) {
+                protectPlayer.protected = true;
+                alert(`ผู้เล่น ${protectId} ได้รับการปกป้อง`);
+            } else {
+                alert("ไม่พบผู้เล่นดังกล่าว");
+            }
+            break;
         default:
             alert(`ผู้เล่น ${playerId} ไม่มีความสามารถพิเศษ`);
     }
@@ -106,7 +162,11 @@ function endGame() {
         }
 
         if (playerToEliminate !== null) {
-            players[playerToEliminate - 1].alive = false;
+            if (!players[playerToEliminate - 1].protected) {
+                players[playerToEliminate - 1].alive = false;
+            } else {
+                alert(`ผู้เล่น ${playerToEliminate} ได้รับการปกป้องและไม่ถูกฆ่า`);
+            }
         }
 
         resultDiv.innerHTML = playerToEliminate ? 
@@ -114,10 +174,21 @@ function endGame() {
     }
 
     displayPlayers(players);
-
     nightPhase = !nightPhase; // เปลี่ยนจากกลางวันเป็นกลางคืน และกลางคืนเป็นกลางวัน
+    checkWinCondition(); // ตรวจสอบสถานะการชนะ
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'block';
+}
+
+function checkWinCondition() {
+    const werewolves = players.filter(player => player.role === 'WereMilinWolf' && player.alive);
+    const villagers = players.filter(player => player.role !== 'WereMilinWolf' && player.alive);
+
+    if (werewolves.length === 0) {
+        alert("ชาวบ้านชนะ!");
+    } else if (werewolves.length >= villagers.length) {
+        alert("WereMilinWolf ชนะ!");
+    }
 }
 
 function restartGame() {
