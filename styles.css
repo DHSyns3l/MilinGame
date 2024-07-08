@@ -12,14 +12,14 @@ body {
     color: #fff; /* ตัวหนังสือสีขาว */
 }
 
-#start-screen, #game-screen, #result-screen {
+#start-screen, #lobby-screen, #game-screen, #result-screen {
     text-align: center;
     background: rgba(0, 0, 0, 0.5); /* พื้นหลังโปร่งแสง */
     padding: 20px;
     border-radius: 10px;
 }
 
-#players {
+#players, #player-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
