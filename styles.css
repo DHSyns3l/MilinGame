@@ -1,16 +1,22 @@
 /* styles.css */
 body {
     font-family: Arial, sans-serif;
+    background-image: url('https://example.com/ocean-background.jpg'); /* URL ของภาพพื้นหลังแนวทะเล */
+    background-size: cover;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
     margin: 0;
+    color: #fff; /* ตัวหนังสือสีขาว */
 }
 
 #start-screen, #game-screen, #result-screen {
     text-align: center;
+    background: rgba(0, 0, 0, 0.5); /* พื้นหลังโปร่งแสง */
+    padding: 20px;
+    border-radius: 10px;
 }
 
 #players {
@@ -20,13 +26,14 @@ body {
 }
 
 .player-card {
-    border: 1px solid #000;
+    border: 1px solid #fff;
     border-radius: 8px;
     padding: 10px;
     margin: 10px;
     width: 150px;
     text-align: center;
-    background-color: #f0f0f0;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
 }
 
 #chat-container {
@@ -36,9 +43,10 @@ body {
 #chat-box {
     width: 300px;
     height: 150px;
-    border: 1px solid #000;
+    border: 1px solid #fff;
     overflow-y: auto;
     margin-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 #chat-input {
@@ -48,4 +56,17 @@ body {
 
 #send-chat {
     padding: 5px 10px;
+}
+
+.chat-message {
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.online-status {
+    color: #0f0; /* สีเขียวสำหรับออนไลน์ */
+}
+
+.offline-status {
+    color: #f00; /* สีแดงสำหรับออฟไลน์ */
 }
