@@ -18,6 +18,7 @@ function startGame() {
     players = assignRoles(playerCount);
     displayPlayers(players);
     nightPhase = true;
+    showPhaseMessage();
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
 }
@@ -175,9 +176,15 @@ function endGame() {
 
     displayPlayers(players);
     nightPhase = !nightPhase; // เปลี่ยนจากกลางวันเป็นกลางคืน และกลางคืนเป็นกลางวัน
+    showPhaseMessage(); // แสดงข้อความการเปลี่ยนรอบ
     checkWinCondition(); // ตรวจสอบสถานะการชนะ
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'block';
+}
+
+function showPhaseMessage() {
+    const message = nightPhase ? "กลางคืนแล้ว! ใช้ความสามารถพิเศษของคุณ" : "กลางวันแล้ว! ทุกคนโหวตเลือกคนที่จะถูกฆ่า";
+    alert(message);
 }
 
 function checkWinCondition() {
@@ -194,4 +201,21 @@ function checkWinCondition() {
 function restartGame() {
     document.getElementById('result-screen').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
+}
+
+// ฟีเจอร์แชทในเกม
+document.getElementById('send-chat').addEventListener('click', sendChat);
+
+function sendChat() {
+    const chatInput = document.getElementById('chat-input');
+    const chatMessage = chatInput.value.trim();
+    if (chatMessage) {
+        const chatBox = document.getElementById('chat-box');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message';
+        messageDiv.innerText = `ผู้เล่น: ${chatMessage}`;
+        chatBox.appendChild(messageDiv);
+        chatInput.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight; // เลื่อนแชทลงล่างสุด
+    }
 }
