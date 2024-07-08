@@ -7,9 +7,26 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <audio id="background-sound" loop>
+        <source src="sounds/ocean.wav" type="audio/wav">
+    </audio>
+    <audio id="vote-sound">
+        <source src="sounds/vote.wav" type="audio/wav">
+    </audio>
+    <audio id="ability-sound">
+        <source src="sounds/ability.wav" type="audio/wav">
+    </audio>
+    <audio id="chat-sound">
+        <source src="sounds/chat.wav" type="audio/wav">
+    </audio>
     <div id="start-screen">
         <h1>เกม WereMilinWolf</h1>
         <button id="start-game">เริ่มเกม</button>
+    </div>
+    <div id="lobby-screen" style="display: none;">
+        <h2>ล็อบบี้</h2>
+        <div id="player-list"></div>
+        <button id="start-lobby-game" style="display: none;">เริ่มเกม</button>
     </div>
     <div id="game-screen" style="display: none;">
         <div id="players"></div>
