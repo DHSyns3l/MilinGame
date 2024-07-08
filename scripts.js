@@ -2,6 +2,7 @@ document.getElementById('start-game').addEventListener('click', startGame);
 document.getElementById('end-game').addEventListener('click', endGame);
 document.getElementById('restart-game').addEventListener('click', restartGame);
 document.getElementById('send-chat').addEventListener('click', sendChat);
+document.getElementById('start-lobby-game').addEventListener('click', startLobbyGame);
 window.addEventListener('beforeunload', saveGameState); // บันทึกสถานะเกมเมื่อปิดหน้าเว็บ
 
 const roles = ['มนุษย์หมาป่า', 'ผู้หยั่งรู้', 'ชาวบ้าน', 'หมอ', 'นักล่า', 'แม่มด', 'คิวปิด', 'ขโมย', 'อัศวิน', 'ผู้พิทักษ์', 'ตัวตลก'];
@@ -11,6 +12,7 @@ let nightPhase = true;
 let chatHistory = []; // เก็บประวัติการแชท
 
 function startGame() {
+    playBackgroundSound();
     const savedGameState = loadGameState();
     if (savedGameState) {
         if (confirm('พบสถานะเกมที่บันทึกไว้ คุณต้องการโหลดสถานะเกมก่อนหน้าไหม?')) {
@@ -19,7 +21,12 @@ function startGame() {
         }
     }
 
-    const playerCount = prompt("กรุณาใส่จำนวนผู้เล่น (8-16):");
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('lobby-screen').style.display = 'block';
+}
+
+function startLobbyGame() {
+    const playerCount = players.length;
     if (playerCount < 8 || playerCount > 16) {
         alert("จำนวนผู้เล่นต้องอยู่ระหว่าง 8-16 คน");
         return;
@@ -29,7 +36,7 @@ function startGame() {
     displayPlayers(players);
     nightPhase = true;
     showPhaseMessage();
-    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
     loadChatHistory(); // โหลดประวัติการแชทเมื่อเริ่มเกมใหม่
 }
@@ -71,11 +78,13 @@ function displayPlayers(players) {
 
 function vote(playerId) {
     votes.push(playerId);
+    playVoteSound();
     alert(`คุณโหวตผู้เล่น ${playerId} แล้ว`);
 }
 
 function useAbility(playerId) {
     const player = players.find(p => p.id === playerId);
+    playAbilitySound();
     const playerRole = player.role;
     let targetId, target, healId, healPlayer, hunterKillId, hunterKillPlayer, witchKillId, witchKillPlayer, witchHealId, witchHealPlayer, lover1Id, lover2Id, lover1, lover2, protectId, protectPlayer;
 
@@ -231,6 +240,7 @@ function sendChat() {
         chatInput.value = '';
         chatBox.scrollTop = chatBox.scrollHeight; // เลื่อนแชทลงล่างสุด
         chatHistory.push(chatMessage); // เก็บประวัติการแชท
+        playChatSound();
         notifyNewMessage(); // แจ้งเตือนข้อความใหม่
     }
 }
@@ -282,4 +292,25 @@ function restoreGameState(savedGameState) {
     loadChatHistory();
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
+}
+
+// ฟังก์ชันเสียง
+function playBackgroundSound() {
+    const sound = document.getElementById('background-sound');
+    sound.play();
+}
+
+function playVoteSound() {
+    const sound = document.getElementById('vote-sound');
+    sound.play();
+}
+
+function playAbilitySound() {
+    const sound = document.getElementById('ability-sound');
+    sound.play();
+}
+
+function playChatSound() {
+    const sound = document.getElementById('chat-sound');
+    sound.play();
 }
